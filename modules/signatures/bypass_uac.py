@@ -142,17 +142,17 @@ class UACBypassCMSTP(Signature):
                         self.ret = True
 
         return self.ret
-    
+
 class UACBypassFodhelper(Signature):
     name = "uac_bypass_fodhelper"
-    description = Uses fodhelper.exe sendkeys technique to bypass User Access Control (UAC)"
+    description = "Uses fodhelper.exe sendkeys technique to bypass User Access Control (UAC)"
     severity = 3
     categories = ["persistence"]
     authors = ["bartblaze"]
     minimum = "1.2"
     evented = True
     ttp = ["T1548"]
-	reference = ["https://winscripting.blog/2017/05/12/first-entry-welcome-and-uac-bypass/"]
+    reference = ["https://winscripting.blog/2017/05/12/first-entry-welcome-and-uac-bypass/"]
 
     def run(self):
         ret = False

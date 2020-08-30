@@ -511,7 +511,7 @@ class UsesWindowsUtilitiesMode(Signature):
                     ret = True
                     self.data.append({"command" : cmdline})
 
-        return ret    
+        return ret
 
 class UsesWindowsUtilitiesNltest(Signature):
     name = "uses_windows_utilities_nltest"
@@ -520,7 +520,7 @@ class UsesWindowsUtilitiesNltest(Signature):
     categories = ["discovery"]
     authors = ["bartblaze"]
     minimum = "1.3"
-	references = ["https://ss64.com/nt/nltest.html"]
+    references = ["https://ss64.com/nt/nltest.html"]
     ttp = ["T1016", "T1482"]
 
     evented = True
@@ -528,7 +528,7 @@ class UsesWindowsUtilitiesNltest(Signature):
     def run(self):
         utilities = [
             "nltest ",
-			"nltest.exe",
+            "nltest.exe",
         ]
 
         ret = False
@@ -542,7 +542,6 @@ class UsesWindowsUtilitiesNltest(Signature):
 
         return ret
 
-		
 class UsesWindowsUtilitiesNTDSutil(Signature):
     name = "uses_windows_utilities_ntdsutil"
     description = "Uses ntdsutil to potentially dump ntds.dit, dump the Active Directory or other actions"
@@ -550,7 +549,7 @@ class UsesWindowsUtilitiesNTDSutil(Signature):
     categories = ["discovery"]
     authors = ["bartblaze"]
     minimum = "1.3"
-	references = ["https://ss64.com/nt/ntdsutil.html"]
+    references = ["https://ss64.com/nt/ntdsutil.html"]
     ttp = ["T1003"]
 
     evented = True
@@ -558,7 +557,7 @@ class UsesWindowsUtilitiesNTDSutil(Signature):
     def run(self):
         utilities = [
             "ntdsutil ",
-			"ntdsutil.exe",
+            "ntdsutil.exe",
         ]
 
         ret = False
@@ -579,7 +578,7 @@ class UsesWindowsUtilitiesCSVDELDFIDE(Signature):
     categories = ["discovery"]
     authors = ["bartblaze"]
     minimum = "1.3"
-	references = ["https://ss64.com/nt/csvde.html"]
+    references = ["https://ss64.com/nt/csvde.html"]
     ttp = ["T1087"]
 
     evented = True
@@ -587,9 +586,9 @@ class UsesWindowsUtilitiesCSVDELDFIDE(Signature):
     def run(self):
         utilities = [
             "CSVDE ",
-			"CSVDE.exe",
+            "CSVDE.exe",
             "LDIFDE ",
-			"LDIFDE.exe",			
+            "LDIFDE.exe",
         ]
 
         ret = False
@@ -610,7 +609,7 @@ class UsesWindowsUtilitiesDSQuery(Signature):
     categories = ["discovery"]
     authors = ["bartblaze"]
     minimum = "1.3"
-	references = ["https://ss64.com/nt/dsquery.html"]
+    references = ["https://ss64.com/nt/dsquery.html"]
     ttp = ["T1069", "T1482", "T1087"]
 
     evented = True
@@ -618,7 +617,7 @@ class UsesWindowsUtilitiesDSQuery(Signature):
     def run(self):
         utilities = [
             "DSQuery ",
-			"DSQuery.exe",	
+            "DSQuery.exe",
         ]
 
         ret = False
@@ -631,7 +630,7 @@ class UsesWindowsUtilitiesDSQuery(Signature):
                     self.data.append({"command" : cmdline})
 
         return ret
-		
+
 class UsesWindowsUtilitiesAppCmd(Signature):
     name = "uses_windows_utilities_appcmd"
     description = "Uses the IIS Command Line Tool, likely for installing a service or loading a file"
@@ -639,7 +638,7 @@ class UsesWindowsUtilitiesAppCmd(Signature):
     categories = ["evasion"]
     authors = ["bartblaze"]
     minimum = "1.3"
-	references = ["https://docs.microsoft.com/en-us/iis/get-started/getting-started-with-iis/getting-started-with-appcmdexe"]
+    references = ["https://docs.microsoft.com/en-us/iis/get-started/getting-started-with-iis/getting-started-with-appcmdexe"]
     ttp = ["T1202"]
 
     evented = True
@@ -647,7 +646,7 @@ class UsesWindowsUtilitiesAppCmd(Signature):
     def run(self):
         utilities = [
             "AppCmd ",
-			"AppCmd.exe",	
+            "AppCmd.exe",
         ]
 
         ret = False
@@ -659,5 +658,4 @@ class UsesWindowsUtilitiesAppCmd(Signature):
                     ret = True
                     self.data.append({"command" : cmdline})
 
-        return ret		    
-    
+        return ret

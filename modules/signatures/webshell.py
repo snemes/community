@@ -54,8 +54,8 @@ class WebShellFiles(Signature):
     categories = ["Webshell"]
     authors = ["bartblaze"]
     minimum = "0.5"
-	ttp = ["T1505"]
-	
+    ttp = ["T1505"]
+
     def run(self):
         indicators = [
             ".*\\\\inetpub\\\\wwwroot\\\\.*",
@@ -67,7 +67,7 @@ class WebShellFiles(Signature):
                 self.data.append({"file": match})
                 return True
 
-        return False	
+        return False
 
 class OWAWebShellFiles(Signature):
     name = "owa_web_shell_files"
@@ -76,8 +76,8 @@ class OWAWebShellFiles(Signature):
     categories = ["Webshell"]
     authors = ["bartblaze"]
     minimum = "0.5"
-	ttp = ["T1505"]
-	
+    ttp = ["T1505"]
+
     def run(self):
         indicators = [
             "C:\\\\Program Files\\\\Microsoft\\\\Exchange Server\\\\V[0-9]{2}\\\\FrontEnd\\\\HttpProxy\\\\owa\\\\.*",
@@ -89,4 +89,4 @@ class OWAWebShellFiles(Signature):
                 self.data.append({"file": match})
                 return True
 
-        return False				
+        return False
