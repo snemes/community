@@ -27,7 +27,7 @@ class Accesses_RecycleBin(Signature):
     severity = 1
     categories = ["evasion", "execution", "collection"]
     authors = ["bartblaze"]
-	minimum = "1.3"
+    minimum = "1.3"
     ttp = ["T1074"]
     evented = True
 
@@ -45,19 +45,19 @@ class Accesses_RecycleBin(Signature):
                 filename = self.get_argument(call, "FileName")
                 if filename and re.match(self.filepattern, filename, re.IGNORECASE):
                     self.filematch = True
-									
+
         if call["api"] == "NtOpenFile":
             desiredaccess = int(self.get_argument(call, "DesiredAccess"), 16)
             if desiredaccess and desiredaccess & 0x00020080:
                 filename = self.get_argument(call, "FileName")
                 if filename and re.match(self.filepattern, filename, re.IGNORECASE):
                     self.filematch = True
-					
+
         if call["api"] == "NtReadFile":
                 filename = self.get_argument(call, "FileName")
                 if filename and re.match(self.filepattern, filename, re.IGNORECASE):
                     self.filematch = True
-								
+
     def on_complete(self):
         if self.filematch:
             return True
