@@ -1,3 +1,5 @@
+from lib.cuckoo.common.abstracts import Signature
+
 class UsesRemoteDesktopSession(Signature):
     name = "uses_remote_desktop_session"
     description = "Connects to/from or queries a remote desktop session"
@@ -11,12 +13,12 @@ class UsesRemoteDesktopSession(Signature):
 
     def run(self):
         utilities = [
-		"tscon ",
-		"tscon.exe",
-		"mstsc ",
-		"mstsc.exe",
-		"qwinsta ",
-		"qwinsta.exe",
+            "tscon ",
+            "tscon.exe",
+            "mstsc ",
+            "mstsc.exe",
+            "qwinsta ",
+            "qwinsta.exe",
         ]
 
         ret = False

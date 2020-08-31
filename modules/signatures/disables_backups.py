@@ -13,6 +13,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from lib.cuckoo.common.abstracts import Signature
+
 class DisablesBackups(Signature):
     name = "disables_backups"
     description = "Disables backups, often seen in ransomware"
@@ -25,17 +27,17 @@ class DisablesBackups(Signature):
 
     def run(self):
         indicators = [
-		".*\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Backup\\\\Client\\\\DisableBackupToDisk",
-		".*\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Backup\\\\Client\\\\DisableBackupToNetwork",
-		".*\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Backup\\\\Client\\\\DisableBackupToOptical",
-		".*\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Backup\\\\Client\\\\DisableBackupLauncher",
-		".*\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Backup\\\\Client\\\\DisableRestoreUI",
-		".*\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Backup\\\\Client\\\\DisableBackupUI",
-		".*\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Backup\\\\Client\\\\DisableSystemBackupUI",
-		".*\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Backup\\\\Client\\\\NoBackupToDisk",
-		".*\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Backup\\\\Client\\\\NoBackupToNetwork",
-		".*\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Backup\\\\Client\\\\NoBackupToOptical",
-		".*\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Backup\\\\Client\\\\NoRunNowBackup",
+            ".*\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Backup\\\\Client\\\\DisableBackupToDisk",
+            ".*\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Backup\\\\Client\\\\DisableBackupToNetwork",
+            ".*\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Backup\\\\Client\\\\DisableBackupToOptical",
+            ".*\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Backup\\\\Client\\\\DisableBackupLauncher",
+            ".*\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Backup\\\\Client\\\\DisableRestoreUI",
+            ".*\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Backup\\\\Client\\\\DisableBackupUI",
+            ".*\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Backup\\\\Client\\\\DisableSystemBackupUI",
+            ".*\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Backup\\\\Client\\\\NoBackupToDisk",
+            ".*\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Backup\\\\Client\\\\NoBackupToNetwork",
+            ".*\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Backup\\\\Client\\\\NoBackupToOptical",
+            ".*\\\\Software\\\\Policies\\\\Microsoft\\\\Windows\\\\Backup\\\\Client\\\\NoRunNowBackup",
         ]
 
         for indicator in indicators:
@@ -44,4 +46,4 @@ class DisablesBackups(Signature):
                 self.data.append({"regkey" : match})
                 return True
 
-        return False 
+        return False
