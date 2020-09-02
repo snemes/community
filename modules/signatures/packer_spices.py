@@ -25,7 +25,7 @@ class SpicesPacked(Signature):
     ttp = ["T1045"]
 
     def run(self):
-        for attr in self.results.get("static", {}).get("dotnet", {}).get("customattrs", []):
+        for attr in self.results.get("static", {}).get("dotnet", {}).get("customattrs") or []:
             if "9rays.net" in attr["value"].lower() or "spices.net" in attr["value"].lower():
                 return True
 

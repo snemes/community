@@ -25,7 +25,7 @@ class AspireCryptPacked(Signature):
     ttp = ["T1045"]
 
     def run(self):
-        for attr in self.results.get("static", {}).get("dotnet", {}).get("customattrs", []):
+        for attr in self.results.get("static", {}).get("dotnet", {}).get("customattrs") or []:
             if "aspirecrypt" in attr["name"].lower() or "aspirecrypt" in attr["value"].lower():
                 return True
 
