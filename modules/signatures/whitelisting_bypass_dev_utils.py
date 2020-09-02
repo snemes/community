@@ -39,21 +39,21 @@ class PersistsDotNetDevUtility(Signature):
             re.compile("[A-Za-z]:\\\\Windows\\\\Microsoft\.NET\\\\Framework\\\\v.*\\\\RegSvcs\.exe", re.IGNORECASE),
             re.compile("[A-Za-z]:\\\\Windows\\\\Microsoft\.NET\\\\Framework\\\\v.*\\\\InstallUtil\.exe", re.IGNORECASE),
         ]
-        self.sname = str()
-        self.dname = str()
+        self.sname = ""
+        self.dname = ""
 
     filter_apinames = set(["CopyFileA", "CopyFileW", "CopyFileExW", "RegSetValueExA", "RegSetValueExW"])
 
     def on_call(self, call, process):
         if call["api"].startswith("CopyFile"):
-            self.sname = self.get_argument(call, "ExistingFileName")
+            self.sname = self.get_argument(call, "ExistingFileName") or ""
             if self.sname:
                 for tool in self.devtools:
                     if re.search(tool, self.sname.lower()):
-                        self.dname = self.get_argument(call, "NewFileName")
+                        self.dname = self.get_argument(call, "NewFileName") or ""
 
         if call["api"] == "RegSetValueExA" or call["api"] == "RegSetValueExW":
-            buff = self.get_argument(call, "Buffer")
+            buff = self.get_argument(call, "Buffer") or ""
             if buff.lower() and self.dname.lower() and self.dname.lower() in buff.lower():
                 self.data.append({"Copy": self.sname.lower() + " > " + self.dname.lower()})
                 fname = self.get_argument(call, "FullName")
@@ -87,19 +87,19 @@ class SpwansDotNetDevUtiliy(Signature):
             re.compile("[A-Za-z]:\\\\Windows\\\\Microsoft\.NET\\\\Framework\\\\v.*\\\\mscorsvw\.exe", re.IGNORECASE),
             re.compile("[A-Z]:\\\\\\\\Windows\\\\\\\\Microsoft\.NET\\\\\\\\Framework\\\\\\\\v.*\\\\\\\\MSBuild\.exe", re.IGNORECASE)
         ]
-        self.sname = str()
-        self.dname = str()
+        self.sname = ""
+        self.dname = ""
         self.executecopy = False
 
     filter_apinames = set(["CreateProcessInternalA", "CreateProcessInternalW", "CopyFileA", "CopyFileW", "CopyFileExW"])
 
     def on_call(self, call, process):
         if call["api"].startswith("CopyFile"):
-            self.sname = self.get_argument(call, "ExistingFileName")
+            self.sname = self.get_argument(call, "ExistingFileName") or ""
             if self.sname:
                 for tool in self.devtools:
                     if re.search(tool, self.sname.lower()):
-                        self.dname = self.get_argument(call, "NewFileName")
+                        self.dname = self.get_argument(call, "NewFileName") or ""
 
         if call["api"] == "CreateProcessInternalA" or call["api"] == "CreateProcessInternalW":
             cmdline = self.get_argument(call, "CommandLine").lower()
