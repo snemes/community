@@ -671,7 +671,7 @@ class SuspiciousMpCmdRunUse(Signature):
     ttp = ["T1105"]
 
     def run(self):
-        indicator = [
+        indicators = [
             ".*MpCmdRun(\.exe)?.*-url.*",
         ]
 
@@ -679,7 +679,7 @@ class SuspiciousMpCmdRunUse(Signature):
             match = self.check_executed_command(pattern=indicator, regex=True)
             if match:
                 self.data.append({"command": match})
-                retrun True
+                return True
 
         return False
 
@@ -694,7 +694,7 @@ class MultipleExplorerInstances(Signature):
     evented = True
 
     def run(self):
-        indicator = [
+        indicators = [
             "explorer.exe /root",
         ]
 
@@ -702,6 +702,6 @@ class MultipleExplorerInstances(Signature):
             match = self.check_executed_command(pattern=indicator)
             if match:
                 self.data.append({"command": match})
-                retrun True
+                return True
 
         return False

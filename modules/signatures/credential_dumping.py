@@ -129,7 +129,7 @@ class RegistryLSASecretsAccess(Signature):
                 self.data.append({"regkey": match})
                 return True
 
-        return False    
+        return False
 
 class FileCredentialStoreAccess(Signature):
     name = "file_credential_store_access"
