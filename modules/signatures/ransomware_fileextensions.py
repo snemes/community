@@ -113,11 +113,16 @@ class RansomwareExtensions(Signature):
         r".*\.mailto": "Netwalker-Mailto",
         r".*\.GNNCRY$": "GonnaCry",
         r".*\.XONIF$": "Fonix",
+        r".*\.NEFILIM$": "Nefilim",
+        r".*\.NEPHILIM$": "Nefilim",
+        r".*\.NEF1LIM$": "Nefilim",
         r".*\.pandemic$": "Pandemic",
         r".*\.ROGER$": "ROGER",
         r".*\.coin$": "Jackpot",
         r".*\.\[[a-z0-9]{8}-[a-z0-9]{8}\]$": "Cryakl-CryLock",
         r".*\.crypted$": "Hakbit-Thanos",
+        r".*\.tx_locked$": "ThunderX",
+        r".*\.[A-Z0-9]{64}$": "SunCrypt",
     }
 
     def run(self):
