@@ -104,7 +104,6 @@ class RansomwareExtensions(Signature):
         r".*\.grinch$": "Tycoon",
         r".*\.redrum$": "Tycoon",
         r".*\.*wasted$": "WastedLocker",
-        r".*\.CONTI$": "Conti",
         r".*\.vhd$": "VHD",
         r".*\.ragn@r_[A-Z0-9]{8}$": "RagnarLocker",
         r".*\.WannaCash$": "WannaCash",
@@ -123,6 +122,9 @@ class RansomwareExtensions(Signature):
         r".*\.crypted$": "Hakbit-Thanos",
         r".*\.tx_locked$": "ThunderX",
         r".*\.[A-Z0-9]{64}$": "SunCrypt",
+        r".*\.CONTI$": "Conti",
+        r".*\.TJODT": "CONTI",
+        r".*\.ReadManual.[A-Z0-9]{8}": "MountLocker",
     }
 
     def run(self):
