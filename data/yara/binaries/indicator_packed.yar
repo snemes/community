@@ -246,17 +246,6 @@ rule INDICATOR_EXE_Packed_VMProtect {
         )
 }
 
-rule INDICATOR_EXE_Packed_Salfram {
-    meta:
-        description = "Detects Salfram executables"
-        reference = "https://blog.talosintelligence.com/2020/09/salfram-robbing-place-without-removing.html"
-        author = "ditekSHen"
-    strings:
-        $s1 = "This Salfram cannot be run is DOS mode" fullword ascii
-    condition:
-        uint16(0) == 0x5a4d and all of them
-}
-
 rule INDICATOR_EXE_DotNET_Encrypted {
     meta:
         description = "Detects encrypted or obfuscated .NET executables"
@@ -354,4 +343,120 @@ rule INDICATOR_EXE_Packed_MEW {
                 pe.sections[i].name == "\x02\xd2u\xdb\x8a\x16\xeb\xd4"
             )
         )
+}
+
+rule INDICATOR_EXE_Packed_RLPack {
+    meta:
+        description = "Detects executables packed with RLPACK"
+        author = "ditekSHen"
+    strings:
+        $s1 = ".packed" fullword ascii
+        $s2 = ".RLPack" fullword ascii
+    condition:
+        uint16(0) == 0x5a4d and all of them or
+        for any i in (0 .. pe.number_of_sections) : (
+            (
+                pe.sections[i].name == ".RLPack"
+            )
+        )
+}
+
+rule INDICATOR_EXE_Packed_Cassandra {
+    meta:
+        description = "Detects executables packed with Cassandra/CyaX"
+        author = "ditekSHen"
+    strings:
+        $s1 = "AntiEM" fullword ascii wide
+        $s2 = "AntiSB" fullword ascii wide
+        $s3 = "Antis" fullword ascii wide
+        $s4 = "XOR_DEC" fullword ascii wide
+        $s5 = "StartInject" fullword ascii wide
+        $s6 = "DetectGawadaka" fullword ascii wide
+        $c1 = "CyaX-Sharp" ascii wide
+        $c2 = "CyaX_Sharp" ascii wide
+        $c3 = "CyaX-PNG" ascii wide
+        $c4 = "CyaX_PNG" ascii wide
+        $pdb = "\\CyaX\\obj\\Debug\\CyaX.pdb" ascii wide
+    condition:
+        (uint16(0) == 0x5a4d and (4 of ($s*) or 2 of ($c*) or $pdb)) or (7 of them)
+}
+
+rule INDICATOR_EXE_Packed_ConfuserEx_Custom {
+    meta:
+        description = "Detects executables packed with ConfuserEx Custom, outside of GIT"
+        author = "ditekSHen"
+    strings:
+        $s1 = { 43 6f 6e 66 75 73 65 72 45 78 20 76 [1-2] 2e [1-2] 2e [1-2] 2d 63 75 73 74 6f 6d }
+    condition:
+        uint16(0) == 0x5a4d and all of them
+}
+
+rule INDICATOR_EXE_Packed_Themida {
+    meta:
+        description = "Detects executables packed with Themida"
+        author = "ditekSHen"
+        snort2_sid = "930067-930069"
+        snort3_sid = "930024"
+    strings:
+        $s1 = "@.themida" fullword ascii
+    condition:
+        uint16(0) == 0x5a4d and all of them or
+        for any i in (0 .. pe.number_of_sections) : (
+            (
+                pe.sections[i].name == ".themida"
+            )
+        )
+}
+
+rule INDICATOR_EXE_Packed_SilentInstallBuilder {
+    meta:
+        description = "Detects executables packed with Silent Install Builder"
+        author = "ditekSHen"
+        snort2_sid = "930070-930072"
+        snort3_sid = "930025"
+    strings:
+        $s1 = "C:\\Users\\Operations\\Source\\Workspaces\\Sib\\Sibl\\Release\\Sibuia.pdb" fullword ascii
+        $s2 = "->mb!Silent Install Builder Demo Package." fullword wide
+    condition:
+        uint16(0) == 0x5a4d and 1 of them
+}
+
+rule INDICATOR_EXE_Packed_NyanXCat_CSharpLoader {
+    meta:
+        author = "ditekSHen"
+        description = "Detects .NET executables utilizing NyanX-CAT C# Loader"
+    strings:
+        $s1 = { 00 50 72 6f 67 72 61 6d 00 4c 6f 61 64 65 72 00 4e 79 61 6e 00 }
+    condition:
+        uint16(0) == 0x5a4d and all of them
+}
+
+rule INDICATOR_EXE_Packed_Loader {
+    meta:
+        author = "ditekSHen"
+        description = "Detects packed executables observed in Molerats"
+    strings:
+        $l1 = "loaderx86.dll" fullword ascii
+        $l2 = "loaderx86" fullword ascii
+        $l3 = "loaderx64.dll" fullword ascii
+        $l4 = "loaderx64" fullword ascii
+        $s1 = "ImportCall_Zw" wide
+        $s2 = "DllInstall" ascii wide
+        $s3 = "evb*.tmp" fullword wide
+        $s4 = "WARNING ZwReadFileInformation" ascii
+        $s5 = "LoadLibrary failed with module " fullword wide
+    condition:
+        uint16(0) == 0x5a4d and 2 of ($l*) and 4 of ($s*)
+}
+
+rule INDICATOR_EXE_Packed_Bonsai {
+    meta:
+        description = "Detects .NET executables developed using Bonsai"
+    strings:
+        $bonsai1 = "<Bonsai." ascii
+        $bonsai2 = "Bonsai.Properties" ascii
+        $bonsai3 = "Bonsai.Core.dll" fullword wide
+        $bonsai4 = "Bonsai.Design." wide
+    condition:
+        uint16(0) == 0x5a4d and 2 of ($bonsai*)
 }

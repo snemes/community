@@ -1,0 +1,20 @@
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+files:
+  accept:
+  - "data/yara/CAPE/*.yar"
+  - "data/yara/memory/*.yar"
+  - "data/yara/binary/*.yar"
+  - "data/yara/urls/*.yar"
+
+false_positives:
+  ignore:
+   - rule: "shellcode_stack_strings"
+   - rule: "shellcode_get_eip"
+   - rule: "shellcode_peb_parsing"
+   - rule: "lsadump"
+   - rule: "UPX"

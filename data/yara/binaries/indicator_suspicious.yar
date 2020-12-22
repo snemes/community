@@ -11,9 +11,11 @@ rule INDICATOR_SUSPICIOUS_Ransomware {
         $cmd4 = "bcdedit /set {default} recoveryenabled no" ascii wide nocase
         $cmd5 = "bcdedit /set {default} bootstatuspolicy ignoreallfailures" ascii wide nocase
         $cmd6 = "wmic SHADOWCOPY DELETE" ascii wide nocase
-        $cmd7 = "wbadmin delete catalog -quiet" ascii wide nocase
+        $wp1 = "wbadmin delete catalog -quiet" ascii wide nocase
+        $wp2 = "wbadmin delete backup" ascii wide nocase
+        $wp3 = "wbadmin delete systemstatebackup" ascii wide nocase
     condition:
-        (uint16(0) == 0x5a4d and 1 of them) or (2 of them)
+        (uint16(0) == 0x5a4d and 2 of ($cmd*) or (1 of ($cmd*) and 1 of ($wp*))) or (4 of them)
 }
 
 rule INDICATOR_SUSPICIOUS_ReflectiveLoader {
@@ -137,8 +139,8 @@ rule INDICATOR_SUSPICIOUS_EXE_SandboxHookingDLL {
         description = "Detects binaries and memory artifcats referencing sandbox DLLs typically observed in sandbox evasion"
         author = "ditekSHen"
     strings:
-        $dll1 = "sbiedll.dll" nocase fullword ascii wide 
-        $dll2 = "dbghelp.dll" nocase fullword ascii wide  
+        $dll1 = "sbiedll.dll" nocase fullword ascii wide
+        // $dll2 = "dbghelp.dll" nocase fullword ascii wide  
         $dll3 = "api_log.dll" nocase fullword ascii wide  
         $dll4 = "pstorec.dll" nocase fullword ascii wide  
         $dll5 = "dir_watch.dll" nocase fullword ascii wide
@@ -161,7 +163,7 @@ rule INDICATOR_SUSPICIOUS_EXE_SandboxHookingDLL {
         $dll22 = "vmcheck32.dll" nocase ascii wide
         $dll23 = "vmcheck64.dll" nocase ascii wide
     condition:
-        uint16(0) == 0x5a4d and 1 of them
+        uint16(0) == 0x5a4d and 3 of them
 }
 
 rule INDICATOR_SUSPICIOUS_AHK_Downloader {
@@ -176,4 +178,154 @@ rule INDICATOR_SUSPICIOUS_AHK_Downloader {
         $s3 = /AHK\s(Keybd|Mouse)/ fullword wide
     condition:
         uint16(0) == 0x5a4d and (1 of ($d*) and 1 of ($s*))
+}
+
+rule INDICATOR_SUSPICIOUS_EXE_UACBypass_CMSTPCOM {
+    meta:
+        description = "Detects Windows exceutables bypassing UAC using CMSTP COM interfaces. MITRE (T1218.003)"
+        author = "ditekSHen"
+    strings:
+        // CMSTPLUA
+        $guid1 = "{3E5FC7F9-9A51-4367-9063-A120244FBEC7}" ascii wide nocase
+        // CMLUAUTIL
+        $guid2 = "{3E000D72-A845-4CD9-BD83-80C07C3B881F}" ascii wide nocase
+        // Connection Manager LUA Host Object
+        $guid3 = "{BA126F01-2166-11D1-B1D0-00805FC1270E}" ascii wide nocase
+        $s1 = "CoGetObject" fullword ascii wide
+        $s2 = "Elevation:Administrator!new:" fullword ascii wide
+    condition:
+       uint16(0) == 0x5a4d and (1 of ($guid*) and 1 of ($s*))
+}
+
+rule INDICATOR_SUSPICIOUS_ClearWinLogs {
+    meta:
+        author = "ditekSHen"
+        description = "Detects executables containing commands for clearing Windows Event Logs"
+    strings:
+        $cmd1 = "wevtutil.exe clear-log" ascii wide nocase
+        $cmd2 = "wevtutil.exe cl " ascii wide nocase
+        $cmd3 = ".ClearEventLog()" ascii wide nocase
+        $cmd4 = "Foreach-Object {wevtutil cl \"$_\"}" ascii wide nocase
+        $cmd5 = "('wevtutil.exe el') DO (call :do_clear" ascii wide nocase
+        $cmd6 = "| ForEach { Clear-EventLog $_.Log }" ascii wide nocase
+        $t1 = "wevtutil" ascii wide nocase
+        $l1 = "cl Application" ascii wide nocase
+        $l2 = "cl System" ascii wide nocase
+        $l3 = "cl Setup" ascii wide nocase
+        $l4 = "cl Security" ascii wide nocase
+        $l5 = "sl Security /e:false" ascii wide nocase
+        $ne1 = "wevtutil.exe cl Aplicaci" fullword wide
+        $ne2 = "wevtutil.exe cl Application /bu:C:\\admin\\backup\\al0306.evtx" fullword wide
+        $ne3 = "wevtutil.exe cl Application /bu:C:\\admin\\backups\\al0306.evtx" fullword wide
+    condition:
+        uint16(0) == 0x5a4d and not any of ($ne*) and ((1 of ($cmd*)) or (1 of ($t*) and 4 of ($l*)))
+}
+
+rule INDICATOR_SUSPICIOUS_DisableWinDefender {
+    meta:
+        author = "ditekSHen"
+        description = "Detects executables containing artifcats associated with disabling Widnows Defender"
+    strings:
+        $reg1 = "SOFTWARE\\Microsoft\\Windows Defender\\Features" ascii wide nocase
+        $reg2 = "SOFTWARE\\Policies\\Microsoft\\Windows Defender" ascii wide nocase
+        $s1 = "Set-MpPreference -SignatureDisableUpdateOnStartupWithoutEngine $true" ascii wide nocase
+        $s2 = "Set-MpPreference -DisableArchiveScanning $true" ascii wide nocase
+        $s3 = "Set-MpPreference -DisableIntrusionPreventionSystem $true" ascii wide nocase
+        $s4 = "Set-MpPreference -DisableScriptScanning $true" ascii wide nocase
+        $s5 = "Set-MpPreference -SubmitSamplesConsent 2" ascii wide nocase
+        $s6 = "Set-MpPreference -MAPSReporting 0" ascii wide nocase
+        $s7 = "Set-MpPreference -HighThreatDefaultAction 6" ascii wide nocase
+        $s8 = "Set-MpPreference -ModerateThreatDefaultAction 6" ascii wide nocase
+        $s9 = "Set-MpPreference -LowThreatDefaultAction 6" ascii wide nocase
+        $s10 = "Set-MpPreference -SevereThreatDefaultAction 6" ascii wide nocase
+    condition:
+        uint16(0) == 0x5a4d and (1 of ($reg*) and 1 of ($s*))
+}
+
+rule INDICATOR_SUSPICIOUS_USNDeleteJournal {
+    meta:
+        author = "ditekSHen"
+        description = "Detects executables containing anti-forensic artifcats of deletiing USN change journal. Observed in ransomware"
+    strings:
+        $cmd1 = "fsutil.exe" ascii wide nocase
+        $s1 = "usn deletejournal /D C:" ascii wide nocase
+        $s2 = "fsutil.exe usn deletejournal" ascii wide nocase
+        $s3 = "fsutil usn deletejournal" ascii wide nocase
+        $ne1 = "fsutil usn readdata C:\\Temp\\sample.txt" wide
+        $ne2 = "fsutil transaction query {0f2d8905-6153-449a-8e03-7d3a38187ba1}" wide
+        $ne3 = "fsutil resource start d:\\foobar d:\\foobar\\LogDir\\LogBLF::TxfLog d:\\foobar\\LogDir\\LogBLF::TmLog" wide
+        $ne4 = "fsutil objectid query C:\\Temp\\sample.txt" wide
+    condition:
+        uint16(0) == 0x5a4d and (not any of ($ne*) and (1 of ($cmd*) and 1 of ($s*)))
+}
+
+rule INDICATOR_SUSPICIOUS_WMIC_Downloader {
+    meta:
+        author = "ditekSHen"
+        description = "Detects files utilizing WMIC for whitelisting bypass and downloading second stage payloads"
+    strings:
+        $s1 = "WMIC.exe os get /format:\"http" wide
+        $s2 = "WMIC.exe computersystem get /format:\"http" wide
+        $s3 = "WMIC.exe dcomapp get /format:\"http" wide
+        $s4 = "WMIC.exe desktop get /format:\"http" wide
+    condition:
+        (uint16(0) == 0x004c or uint16(0) == 0x5a4d) and 1 of them
+}
+
+rule INDICATOR_SUSPICIOUS_PE_ResourceTuner {
+    meta:
+        author = "ditekSHen"
+        description = "Detects executables with modified PE resources usning the unpaid version of Resource Tuner"
+    strings:
+        $s1 = "Modified by an unpaid evaluation copy of Resource Tuner 2 (www.heaventools.com)" fullword wide
+    condition:
+        uint16(0) == 0x5a4d and all of them 
+}
+
+rule INDICATOR_SUSPICIOUS_ASEP_REG_Reverse {
+    meta:
+        author = "ditekSHen"
+        description = "Detects file containing reversed ASEP Autorun registry keys"
+    strings:
+        $s1 = "nuR\\noisreVtnerruC\\swodniW\\tfosorciM" ascii wide nocase
+        $s2 = "ecnOnuR\\noisreVtnerruC\\swodniW\\tfosorciM" ascii wide nocase
+        $s3 = "secivreSnuR\\noisreVtnerruC\\swodniW\\tfosorciM" ascii wide nocase
+        $s4 = "xEecnOnuR\\noisreVtnerruC\\swodniW\\tfosorciM" ascii wide nocase
+        $s5 = "ecnOsecivreSnuR\\noisreVtnerruC\\swodniW\\tfosorciM" ascii wide nocase
+        $s6 = "yfitoN\\nogolniW\\noisreVtnerruC\\TN swodniW\\tfosorciM" ascii wide nocase
+        $s7 = "tiniresU\\nogolniW\\noisreVtnerruC\\TN swodniW\\tfosorciM" ascii wide nocase
+        $s8 = "nuR\\rerolpxE\\seiciloP\\noisreVtnerruC\\swodniW\\tfosorciM" ascii wide nocase
+        $s9 = "stnenopmoC dellatsnI\\puteS evitcA\\tfosorciM" ascii wide nocase
+        $s10 = "sLLD_tinIppA\\swodniW\\noisreVtnerruC\\TN swodniW\\tfosorciM" ascii wide nocase
+        $s11 = "snoitpO noitucexE eliF egamI\\noisreVtnerruC\\TN swodniW\\tfosorciM" ascii wide nocase
+        $s12 = "llehS\\nogolniW\\noisreVtnerruC\\TN swodniW\\tfosorciM" ascii wide nocase
+        $s13 = "daol\\swodniW\\noisreVtnerruC\\TN swodniW\\tfosorciM" ascii wide nocase
+        $s14 = "daoLyaleDtcejbOecivreSllehS\\noisreVtnerruC\\swodniW\\tfosorciM" ascii wide nocase
+        $s15 = "nuRotuA\\rossecorP\\dnammoC\\tfosorciM" ascii wide nocase
+        $s16 = "putratS\\sredloF llehS resU\\rerolpxE\\noisreVtnerruC\\swodniW\\tfosorciM" ascii wide nocase
+        $s17 = "sllDtreCppA\\reganaM noisseS\\lortnoC\\teSlortnoCtnerruC\\metsyS" ascii wide nocase
+        $s18 = "sllDtreCppA\\reganaM noisseS\\lortnoC\\100teSlortnoC\\metsyS" ascii wide nocase
+        $s19 = ")tluafeD(\\dnammoC\\nepO\\llehS\\elifexE\\sessalC\\erawtfoS" ascii wide nocase
+        $s20 = ")tluafeD(\\dnammoC\\nepO\\llehS\\elifexE\\sessalC\\edoN2346woW\\erawtfoS" ascii wide nocase
+    condition:
+        1 of them and filesize < 2000KB
+}
+
+rule INDICATOR_SUSPICIOUS_SQLQuery_ConfidentialDataStore {
+    meta:
+        author = "ditekSHen"
+        description = "Detects executables containing SQL queries to confidential data stores. Observed in infostealers"
+    strings:
+        $select = "select " ascii wide nocase
+        $table1 = " from credit_cards" ascii wide nocase
+        $table2 = " from logins" ascii wide nocase
+        $table3 = " from cookies" ascii wide nocase
+        $table4 = " from moz_cookies" ascii wide nocase
+        $column1 = "name" ascii wide nocase
+        $column2 = "password_value" ascii wide nocase
+        $column3 = "encrypted_value" ascii wide nocase
+        $column4 = "card_number_encrypted" ascii wide nocase
+        $column5 = "isHttpOnly" ascii wide nocase
+    condition:
+        uint16(0) == 0x5a4d and 2 of ($table*) and 2 of ($column*) and $select
 }
