@@ -125,6 +125,8 @@ class RansomwareExtensions(Signature):
         r".*\.CONTI$": "Conti",
         r".*\.TJODT": "CONTI",
         r".*\.ReadManual.[A-Z0-9]{8}": "MountLocker",
+        r".*\.pysa$": "PYSA",
+        r".*\.__NIST_[A-Z0-9]{4}__$": "Babuk",
     }
 
     def run(self):
